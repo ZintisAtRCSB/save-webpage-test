@@ -89,10 +89,11 @@
       // !!!!! there is a bug here. The opened window will have a loading circle in the tab bar (forever?)
       // It appears to have no impact on functionality, but could confuse the user (who thinks there is more to see)
       function openImageInNewWindow(base64URL){
-        // Open window
-        var win = window.open();
-        // Write Iframe with image blob as src
-        win.document.write(`<iframe src="${base64URL}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`);
+        // image tag is simpler than prior iframe method
+        const image = new Image();
+        image.src = base64URL
+        const newWindow = window.open("");
+        newWindow.document.write(image.outerHTML);
       }
     </script>
   </body>
