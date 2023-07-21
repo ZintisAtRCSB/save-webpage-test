@@ -30,43 +30,34 @@
       const saveBody = document.getElementById("saveBody")
 
       // See only chart
-      openChart.addEventListener("click", createViewImageInBrowserFn(sampleChart))
+      openChart.addEventListener("click", () => viewImageInBrowser(sampleChart))
       // See whole page
-      openBody.addEventListener("click", createViewImageInBrowserFn(document.body))
+      openBody.addEventListener("click", () => viewImageInBrowser(document.body))
       // Save only chart
-      saveChart.addEventListener("click", createImageSaverFn(sampleChart))
+      saveChart.addEventListener("click", () => imageSaver(sampleChart))
       // Save whole page
-      saveBody.addEventListener("click", createImageSaverFn(document.body))
+      saveBody.addEventListener("click", () => imageSaver(document.body))
 
-      // function creates the callback Fn with various targets
-      function createViewImageInBrowserFn(targetEl){
-        return async function viewImageInBrowser(){
-          // Keep variable in scope
-          const screenshotTarget = targetEl;
-          // Turn HTML into canvas
-          const canvas = await html2canvas(screenshotTarget)
-          // Convert canvas to image type
-          const base64image = canvas.toDataURL("image/png");
-          // Open image blob using iframe in new window
-          openImageInNewWindow(base64image)
-        }
+      async function viewImageInBrowser(screenshotTarget){
+        // Turn HTML into canvas
+        const canvas = await html2canvas(screenshotTarget)
+        // Convert canvas to image type
+        const base64image = canvas.toDataURL("image/png");
+        // Open image blob using iframe in new window
+        openImageInNewWindow(base64image)
       }
 
-      function createImageSaverFn(targetEl){
-        return async function imageSaver(){
-          // Keep variable in scope
-          const screenshotTarget = targetEl;
-          // Turn HTML into canvas
-          const canvas = await html2canvas(screenshotTarget)
-          // Create Image Blob
-          const base64image = canvas.toDataURL("image/png");
-          // Convert Blob to file
-          const fileName = `${screenshotTarget.id || screenshotTarget.tagName}.png`
-          // Get file data (first argument has data)
-          const file = await urltoFile(fileName, base64image)
-          // Download data
-          downloadFile(fileName, file)
-        }
+      async function imageSaver(screenshotTarget){
+        // Turn HTML into canvas
+        const canvas = await html2canvas(screenshotTarget)
+        // Create Image Blob
+        const base64image = canvas.toDataURL("image/png");
+        // Convert Blob to file
+        const fileName = `${screenshotTarget.id || screenshotTarget.tagName}.png`
+        // Get file data (first argument has data)
+        const file = await urltoFile(fileName, base64image)
+        // Download data
+        downloadFile(fileName, file)
       }
 
       //return a promise that resolves with a File instance
@@ -95,6 +86,8 @@
         URL.revokeObjectURL(link.href);
       };
 
+      // !!!!! there is a bug here. The opened window will have a loading circle in the tab bar (forever?)
+      // It appears to have no impact on functionality, but could confuse the user (who thinks there is more to see)
       function openImageInNewWindow(base64URL){
         // Open window
         var win = window.open();
